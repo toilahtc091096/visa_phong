@@ -239,6 +239,9 @@ def build_work_info_profile(
     job_type_code = JOB_TYPE_BY_LABEL[job_type_label]
     work_begin_date = date_util.work_experience_begin_date(register_date)
     work_end_date = date_util.work_experience_end_date()
+    if is_under_18:
+        job_type_label = "Student"
+        job_type_code = JOB_TYPE_BY_LABEL[job_type_label]
 
     if job_type_label == "Unemployed":
         not_apply_items = [
@@ -259,6 +262,14 @@ def build_work_info_profile(
                 SELF_EMPLOYED_JOB_DESC,
             )
         ]
+    elif job_type_label == "Student":
+        work_experience: list[dict[str, Any]] = []
+        not_apply_items = [
+            {
+                "notApplyCode": "workExperience",
+                "remark": "CON NHO",
+            }
+        ]
     else:
         not_apply_items = []
         work_experience = [
@@ -278,7 +289,6 @@ def build_work_info_profile(
     else:
         we_src = work_experience
     if is_under_18:
-        job_type_label = "Student"
         work_experience: list[dict[str, Any]] = []
         not_apply_items = [
             {
