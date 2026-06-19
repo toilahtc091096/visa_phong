@@ -42,7 +42,7 @@ from constants import (
     PASSPORT_TYPE_CODE,
     UNDER_18_HOTEL_INFO,
     EMERGENCY_RELATION_FATHER,
-    EMERGENCY_RELATION_MOTHER
+    EMERGENCY_RELATION_MOTHER,
 )
 from models import (
     ApplyInfoProfile,
@@ -759,7 +759,11 @@ def getTravelCommonInfo(
         "emergencyEmail": "",
         "emergencyPhoneNumber": mobile_utils.generate_supervisor_tel("0964585356"),
         "emergencyProvince": "",
-        "emergencyRelation": TRAVEL_EMERGENCY_RELATION if emergency_relation == "" else emergency_relation,
+        "emergencyRelation": (
+            TRAVEL_EMERGENCY_RELATION
+            if emergency_relation == ""
+            else emergency_relation
+        ),
         "emergencyStreetAddr": "",
         "emergencyZipCode": "",
         # todo: if under 10 ages, choose OTHER, and add parent information
@@ -950,6 +954,7 @@ def build_travel_info_profile(
     print(f"is_under_18: {is_under_18}, haveChildFlag: {haveChildFlag}")
     arrival_str = date_util.iso_date_str(arrival_date)
     leave_str = date_util.iso_date_str(leave_date)
+    emergency_relation = TRAVEL_EMERGENCY_RELATION
     if (
         fatherFamilyName == ""
         and fatherGivenName == ""
@@ -1059,6 +1064,8 @@ def build_previous_china_travel_body(
     haveOtherVisaFlag: str = "",
     old_otherVisas: str = "",
     old_otherCountries: str = "",
+    collectFingerprintFlag: bool = False,
+    chinaResidenceLicenseFlag: bool = False,
 ) -> dict[str, Any]:
     """Applicant has been to China before: fill prior-visit and visa fields."""
 
@@ -1089,10 +1096,10 @@ def build_previous_china_travel_body(
     return {
         **_previous_travel_base(applyid),
         "arrivedChinaFlag": True,
-        "chinaResidenceLicenseFlag": False,
+        "chinaResidenceLicenseFlag": chinaResidenceLicenseFlag,
         "collectFingerprintCountry": "",
         "collectFingerprintDate": "",
-        "collectFingerprintFlag": False,
+        "collectFingerprintFlag": collectFingerprintFlag,
         "collectFingerprintPlace": "",
         "lostChinaVisaDate": "",
         "lostChinaVisaFlag": False,
@@ -1136,6 +1143,8 @@ def build_previous_travel_info_profile(
     haveOtherVisaFlag: str = "",
     old_otherVisas: str = "",
     old_otherCountries: str = "",
+    collectFingerprintFlag: bool = False,
+    chinaResidenceLicenseFlag: bool = False,
 ) -> PreviousTravelInfoProfile:
     if not arrivedChinaFlag:
         previous_travel_json = _build_no_previous_china_travel_body(applyid)
@@ -1150,6 +1159,8 @@ def build_previous_travel_info_profile(
             haveOtherVisaFlag,
             old_otherVisas,
             old_otherCountries,
+            collectFingerprintFlag,
+            chinaResidenceLicenseFlag
         )
     return PreviousTravelInfoProfile.from_dict(previous_travel_json)
 
@@ -1291,11 +1302,11 @@ def build_signature_body(
         tempSaveFlag=False,
         userId="",
         agentFlag=False,
-        agentName="CONG TY TNHH DU LICH WM TRAVEL VIETNAM",
+        agentName="GIANG SON TRAVEL",
         W2="752001",
-        relationship="CONG TY DU LICH",
-        agentAddr="KDT DUONG NOI, HA DONG, HA NOI",
-        agentTel="0936188491",
+        relationship="KHACH HANG",
+        agentAddr="HA NOI",
+        agentTel="0969588832",
         applyid=applyid,
         lang="en_US",
     )
